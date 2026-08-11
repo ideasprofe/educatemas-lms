@@ -19,7 +19,6 @@ export default function DashboardPage() {
       const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       setProfile(prof)
 
-      // Cargar cursos según el rol
       if (prof?.role === 'teacher') {
         const { data } = await supabase.from('courses').select('*, schools(name)').eq('teacher_id', user.id)
         setCourses(data || [])
@@ -32,7 +31,6 @@ export default function DashboardPage() {
         setCourses(data || [])
       }
 
-      // Notificaciones no leídas
       const { data: notifs } = await supabase.from('notifications')
         .select('*').eq('user_id', user.id).eq('read', false).order('created_at', { ascending: false }).limit(5)
       setNotifications(notifs || [])
@@ -58,20 +56,29 @@ export default function DashboardPage() {
     teacher: 'Profesor', student: 'Alumno', parent: 'Padre/Tutor'
   }
 
+  const isSuperAdmin = profile?.role === 'superadmin'
+  const isPublisherAdmin = profile?.role === 'publisher_admin'
+  const isSchoolManager = ['school_director', 'school_admin'].includes(profile?.role || '')
+
+  const adminCards = [
+    { title: 'Gestionar Usuarios', description: 'Crear, editar y asignar roles a los usuarios de la plataforma', icon: '👥', href: '/admin/usuarios', color: 'bg-blue-600' },
+    { title: 'Colegios', description: 'Administrar los colegios suscritos a la plataforma', icon: '🏫', href: '/admin/colegios', color: 'bg-emerald-600' },
+    { title: 'Editoriales', description: 'Gestionar editoriales y sus publicaciones', icon: '📚', href: '/admin/editoriales', color: 'bg-purple-600' },
+  ]
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
       <nav className="bg-white border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">E</span>
+            <span className="text-white font-bold text-sm">Y</span>
           </div>
-          <span className="font-bold text-gray-900">EduSaaS</span>
+          <span className="font-bold text-gray-900">YachanaHub</span>
         </div>
         <div className="flex items-center gap-4">
           {notifications.length > 0 && (
             <div className="relative">
-              <span className="text-xl">🔔</span>
+              <span className="text-xl">{'🔔'}</span>
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                 {notifications.length}
               </span>
@@ -87,61 +94,93 @@ export default function DashboardPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Bienvenido, {profile?.full_name?.split(' ')[0]} 👋
+          Bienvenido, {profile?.full_name?.split(' ')[0]} {'👋'}
         </h1>
         <p className="text-gray-500 mb-8">
-          {profile?.role === 'student' ? 'Aquí están tus cursos activos' :
-           profile?.role === 'teacher' ? 'Aquí están tus cursos asignados' :
-           'Panel de administración'}
+          {isSuperAdmin ? 'Panel de administracion de YachanaHub' :
+           profile?.role === 'student' ? 'Aqui estan tus cursos activos' :
+           profile?.role === 'teacher' ? 'Aqui estan tus cursos asignados' :
+           'Panel de administracion'}
         </p>
 
-        {/* Notificaciones */}
         {notifications.length > 0 && (
           <div className="mb-6 space-y-2">
             {notifications.map(n => (
               <div key={n.id} className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-800 flex items-center gap-2">
-                <span>🔔</span> {n.message}
+                <span>{'🔔'}</span> {n.message}
               </div>
             ))}
           </div>
         )}
 
-        {/* Grid de cursos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {courses.map(course => (
-            <div key={course.id}
-              onClick={() => router.push(`/courses/${course.id}`)}
-              className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mb-3">
-                <span className="text-white font-bold">{course.title?.[0]}</span>
-              </div>
-              <h3 className="font-semibold text-gray-900">{course.title}</h3>
-              <p className="text-sm text-gray-500 mt-1">{course.subject || 'Sin materia asignada'}</p>
-              {course.schools && (
-                <p className="text-xs text-gray-400 mt-2">{course.schools.name}</p>
-              )}
-              {course.profiles && (
-                <p className="text-xs text-gray-400 mt-2">Prof: {course.profiles.full_name}</p>
-              )}
+        {isSuperAdmin && (
+          <div className="mb-10">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Administracion del sistema</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {adminCards.map(card => (
+                <div key={card.href} onClick={() => router.push(card.href)}
+                  className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer hover:shadow-md transition-shadow">
+                  <div className={`w-10 h-10 ${card.color} rounded-lg flex items-center justify-center mb-3`}>
+                    <span className="text-xl">{card.icon}</span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900">{card.title}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{card.description}</p>
+                </div>
+              ))}
             </div>
-          ))}
-          {courses.length === 0 && (
-            <div className="col-span-3 text-center py-16 text-gray-400">
-              <div className="text-4xl mb-3">📚</div>
-              <p>No hay cursos disponibles aún</p>
-            </div>
-          )}
-        </div>
-
-        {/* Botón crear curso (solo profesores y directores) */}
-        {['teacher', 'school_director', 'school_admin'].includes(profile?.role || '') && (
-          <div className="mt-8">
-            <button
-              onClick={() => router.push('/courses/new')}
-              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
-              + Crear nuevo curso
-            </button>
           </div>
+        )}
+
+        {isPublisherAdmin && (
+          <div className="mb-10">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Panel Editorial</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div onClick={() => router.push('/courses/new')}
+                className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center mb-3">
+                  <span className="text-xl">{'📚'}</span>
+                </div>
+                <h3 className="font-semibold text-gray-900">Crear contenido</h3>
+                <p className="text-sm text-gray-500 mt-1">Agregar nuevos libros y cursos a la plataforma</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!isSuperAdmin && (
+          <>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              {isSchoolManager ? 'Cursos del colegio' : profile?.role === 'teacher' ? 'Mis cursos' : 'Mis cursos activos'}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courses.map(course => (
+                <div key={course.id} onClick={() => router.push(`/courses/${course.id}`)}
+                  className="bg-white rounded-xl border border-gray-200 p-5 cursor-pointer hover:shadow-md transition-shadow">
+                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mb-3">
+                    <span className="text-white font-bold">{course.title?.[0]}</span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900">{course.title}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{course.subject || 'Sin materia asignada'}</p>
+                  {course.schools && <p className="text-xs text-gray-400 mt-2">{course.schools.name}</p>}
+                  {course.profiles && <p className="text-xs text-gray-400 mt-2">Prof: {course.profiles.full_name}</p>}
+                </div>
+              ))}
+              {courses.length === 0 && (
+                <div className="col-span-3 text-center py-16 text-gray-400">
+                  <div className="text-4xl mb-3">{'📚'}</div>
+                  <p>No hay cursos disponibles aun</p>
+                </div>
+              )}
+            </div>
+            {['teacher', 'school_director', 'school_admin'].includes(profile?.role || '') && (
+              <div className="mt-8">
+                <button onClick={() => router.push('/courses/new')}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                  + Crear nuevo curso
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
