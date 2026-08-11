@@ -58,14 +58,14 @@ export default function ResetPasswordPage() {
           <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
             <span className="text-white text-2xl font-bold">Y</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva contrase&ntilde;a</h1>
-          <p className="text-gray-500 text-sm mt-1">YachanaHub &mdash; Plataforma educativa</p>
+          <h1 className="text-2xl font-bold text-gray-900">Nueva contrase{'ñ'}a</h1>
+          <p className="text-gray-500 text-sm mt-1">YachanaHub — Plataforma educativa</p>
         </div>
 
         {success ? (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-4 rounded-lg text-sm text-center">
             <div className="text-2xl mb-2">{'✓'}</div>
-            <p className="font-semibold">Contrase&ntilde;a actualizada</p>
+            <p className="font-semibold">Contrase{'ñ'}a actualizada</p>
             <p className="mt-1 text-xs text-green-600">Redirigiendo al panel...</p>
           </div>
         ) : !ready ? (
@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
                 onClick={() => setReady(true)}
                 className="text-blue-600 hover:underline"
               >
-                haz clic aqu&iacute;
+                haz clic aqu{'í'}
               </button>
               {' '}para continuar.
             </div>
@@ -91,28 +91,28 @@ export default function ResetPasswordPage() {
             )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nueva contrase&ntilde;a
+                Nueva contrase{'ñ'}a
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="M&iacute;nimo 6 caracteres"
+                placeholder="Mínimo 6 caracteres"
                 required
                 minLength={6}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirmar contrase&ntilde;a
+                Confirmar contrase{'ñ'}a
               </label>
               <input
                 type="password"
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Repite la contrase&ntilde;a"
+                placeholder="Repite la contraseña"
                 required
                 minLength={6}
               />
@@ -122,7 +122,7 @@ export default function ResetPasswordPage() {
               disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50"
             >
-              {loading ? 'Actualizando...' : 'Cambiar contrase&ntilde;a'}
+              {loading ? 'Actualizando...' : 'Cambiar contrase{'ñ'}a'}
             </button>
             <p className="text-center text-xs text-gray-400 mt-2">
               <button
