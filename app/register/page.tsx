@@ -56,8 +56,11 @@ export default function RegisterPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Soy...</label>
             <select value={form.role} onChange={e => setForm({...form, role: e.target.value})}
               className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-              <option value="student">Alumno</option>
+              <option value="superadmin">Superadministrador</option>
+              <option value="school_admin">Administrador de Colegio</option>
+              <option value="school_director">Director</option>
               <option value="teacher">Profesor</option>
+              <option value="student">Alumno</option>
               <option value="parent">Padre / Tutor</option>
             </select>
           </div>
