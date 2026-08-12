@@ -13,30 +13,25 @@ export default function ResetPasswordPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Supabase injects the session from the URL hash automatically.
-    // We listen for the PASSWORD_RECOVERY event to know the token is valid.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setReady(true)
       }
     })
-
-    // Also check if there's already an active session (in case listener already fired)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setReady(true)
     })
-
     return () => subscription.unsubscribe()
   }, [])
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password !== confirm) {
-      setError('Las contraseñas no coinciden')
+      setError('Las contrasenas no coinciden')
       return
     }
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+      setError('La contrasena debe tener al menos 6 caracteres')
       return
     }
     setLoading(true)
@@ -44,7 +39,7 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password })
     setLoading(false)
     if (error) {
-      setError('No se pudo actualizar la contraseña. El enlace puede haber expirado.')
+      setError('No se pudo actualizar la contrasena. El enlace puede haber expirado.')
       return
     }
     setSuccess(true)
@@ -58,26 +53,23 @@ export default function ResetPasswordPage() {
           <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
             <span className="text-white text-2xl font-bold">Y</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva contrase{'ñ'}a</h1>
-          <p className="text-gray-500 text-sm mt-1">YachanaHub — Plataforma educativa</p>
+          <h1 className="text-2xl font-bold text-gray-900">Nueva clave</h1>
+          <p className="text-gray-500 text-sm mt-1">YachanaHub</p>
         </div>
 
         {success ? (
           <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-4 rounded-lg text-sm text-center">
             <div className="text-2xl mb-2">{'✓'}</div>
-            <p className="font-semibold">Contrase{'ñ'}a actualizada</p>
+            <p className="font-semibold">Clave actualizada</p>
             <p className="mt-1 text-xs text-green-600">Redirigiendo al panel...</p>
           </div>
         ) : !ready ? (
           <div className="text-center py-8">
             <div className="text-gray-400 text-sm">Verificando enlace...</div>
             <div className="mt-4 text-xs text-gray-400">
-              Si esto tarda mucho,{' '}
-              <button
-                onClick={() => setReady(true)}
-                className="text-blue-600 hover:underline"
-              >
-                haz clic aqu{'í'}
+              Si esto tarda,{' '}
+              <button onClick={() => setReady(true)} className="text-blue-600 hover:underline">
+                haz clic aqui
               </button>
               {' '}para continuar.
             </div>
@@ -91,28 +83,28 @@ export default function ResetPasswordPage() {
             )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nueva contrase{'ñ'}a
+                Nueva clave
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Minimo 6 caracteres"
                 required
                 minLength={6}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirmar contrase{'ñ'}a
+                Confirmar clave
               </label>
               <input
                 type="password"
                 value={confirm}
                 onChange={e => setConfirm(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Repite la contraseña"
+                placeholder="Repite la clave"
                 required
                 minLength={6}
               />
@@ -122,7 +114,7 @@ export default function ResetPasswordPage() {
               disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:opacity-50"
             >
-              {loading ? 'Actualizando...' : 'Cambiar contrase{'ñ'}a'}
+              {loading ? 'Guardando...' : 'Cambiar clave'}
             </button>
             <p className="text-center text-xs text-gray-400 mt-2">
               <button
